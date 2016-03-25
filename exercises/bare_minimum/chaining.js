@@ -102,10 +102,29 @@ var addNewUserToDatabaseAsync = function(user) {
 var pluckFirstLineFromFileAsync = require('./promiseConstructor').pluckFirstLineFromFileAsync;
 var getGitHubProfileAsync = require('./promisification').getGitHubProfileAsync
 
-
+var writeFileAsync = function(body, path) {
+  return new Promise(function(resolve, reject) {
+    fs.writeFile(path, body, function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve('did it');
+      }
+    });
+  });
+}
 
 var fetchProfileAndWriteToFile = function(readFilePath, writeFilePath) {
-  // TODO
+  return pluckFirstLineFromFileAsync(readFilePath)
+    .then(function(un) {
+      return getGitHubProfileAsync(un);
+    })
+    .then(function(body) {
+      return writeFileAsync(body, writeFilePath);
+    })
+    .then(function(msg) {
+      console.log(msg);
+    });
 };
 
 module.exports = {
